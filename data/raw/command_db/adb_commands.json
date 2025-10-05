@@ -1,0 +1,369 @@
+[
+  {
+    "command": "adb devices",
+    "category": "device_management",
+    "description": "List all connected devices",
+    "syntax": "adb devices [-l]",
+    "parameters": [
+      {
+        "-l": "Long output with device details"
+      }
+    ],
+    "examples": [
+      {
+        "command": "adb devices",
+        "explanation": "Lists all connected devices with serial numbers"
+      },
+      {
+        "command": "adb devices -l",
+        "explanation": "Lists devices with product name, model, and transport ID"
+      }
+    ],
+    "common_issues": [
+      "Device shows as 'unauthorized' - Check USB debugging authorization",
+      "Device not showing - Check USB drivers/cable"
+    ],
+    "related_commands": [
+      "adb connect",
+      "adb disconnect"
+    ],
+    "tags": [
+      "basic",
+      "connectivity",
+      "debugging"
+    ]
+  },
+  {
+    "command": "adb shell",
+    "category": "shell",
+    "description": "Start an interactive shell on device",
+    "syntax": "adb shell [command]",
+    "parameters": [],
+    "examples": [
+      {
+        "command": "adb shell",
+        "explanation": "Start interactive shell session"
+      },
+      {
+        "command": "adb shell ls /sdcard/",
+        "explanation": "List files in sdcard directory"
+      }
+    ],
+    "common_issues": [],
+    "related_commands": [
+      "adb exec-out",
+      "adb shell am",
+      "adb shell pm"
+    ],
+    "tags": [
+      "basic",
+      "shell",
+      "essential"
+    ]
+  },
+  {
+    "command": "adb install",
+    "category": "package_management",
+    "description": "Install an APK on device",
+    "syntax": "adb install [options] <path_to_apk>",
+    "parameters": [
+      {
+        "-r": "Reinstall existing app, keeping data"
+      },
+      {
+        "-t": "Allow test APKs to be installed"
+      },
+      {
+        "-d": "Allow version code downgrade"
+      },
+      {
+        "-g": "Grant all runtime permissions"
+      }
+    ],
+    "examples": [
+      {
+        "command": "adb install app.apk",
+        "explanation": "Install app.apk on connected device"
+      },
+      {
+        "command": "adb install -r app.apk",
+        "explanation": "Reinstall app, keeping existing data"
+      },
+      {
+        "command": "adb install -g app.apk",
+        "explanation": "Install and grant all permissions automatically"
+      }
+    ],
+    "common_issues": [
+      "INSTALL_FAILED_UPDATE_INCOMPATIBLE - Uninstall existing app first",
+      "INSTALL_FAILED_INSUFFICIENT_STORAGE - Clear device storage"
+    ],
+    "related_commands": [
+      "adb uninstall",
+      "adb shell pm install"
+    ],
+    "tags": [
+      "package",
+      "installation",
+      "essential"
+    ]
+  },
+  {
+    "command": "adb shell pm list packages",
+    "category": "package_management",
+    "description": "List installed packages on device",
+    "syntax": "adb shell pm list packages [options]",
+    "parameters": [
+      {
+        "-f": "Show associated APK file"
+      },
+      {
+        "-d": "Filter to show only disabled packages"
+      },
+      {
+        "-e": "Filter to show only enabled packages"
+      },
+      {
+        "-s": "Filter to show only system packages"
+      },
+      {
+        "-3": "Filter to show only third-party packages"
+      }
+    ],
+    "examples": [
+      {
+        "command": "adb shell pm list packages",
+        "explanation": "List all installed packages"
+      },
+      {
+        "command": "adb shell pm list packages -3",
+        "explanation": "List only user-installed apps"
+      },
+      {
+        "command": "adb shell pm list packages | grep chrome",
+        "explanation": "Find packages containing 'chrome'"
+      }
+    ],
+    "common_issues": [],
+    "related_commands": [
+      "adb shell pm path",
+      "adb shell pm clear"
+    ],
+    "tags": [
+      "package",
+      "query",
+      "essential"
+    ]
+  },
+  {
+    "command": "adb shell am start",
+    "category": "activity_management",
+    "description": "Start an activity/launch an app",
+    "syntax": "adb shell am start [options] <INTENT>",
+    "parameters": [
+      {
+        "-n": "Component name (package/activity)"
+      },
+      {
+        "-a": "Action"
+      },
+      {
+        "-d": "Data URI"
+      },
+      {
+        "-W": "Wait for launch to complete"
+      }
+    ],
+    "examples": [
+      {
+        "command": "adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main",
+        "explanation": "Launch Chrome browser"
+      },
+      {
+        "command": "adb shell am start -a android.intent.action.VIEW -d https://example.com",
+        "explanation": "Open URL in default browser"
+      }
+    ],
+    "common_issues": [
+      "Activity not found - Check package and activity name",
+      "Permission denied - App may require special permissions"
+    ],
+    "related_commands": [
+      "adb shell am force-stop",
+      "adb shell am kill"
+    ],
+    "tags": [
+      "activity",
+      "launch",
+      "essential"
+    ]
+  },
+  {
+    "command": "adb pull",
+    "category": "file_transfer",
+    "description": "Copy file from device to computer",
+    "syntax": "adb pull <remote_path> [local_path]",
+    "parameters": [],
+    "examples": [
+      {
+        "command": "adb pull /sdcard/screenshot.png",
+        "explanation": "Download screenshot from device"
+      },
+      {
+        "command": "adb pull /data/data/com.app/databases/app.db ./backup/",
+        "explanation": "Backup app database (requires root)"
+      }
+    ],
+    "common_issues": [
+      "Permission denied - File may be in protected directory",
+      "Remote object not found - Check file path"
+    ],
+    "related_commands": [
+      "adb push",
+      "adb shell cp"
+    ],
+    "tags": [
+      "file",
+      "transfer",
+      "essential"
+    ]
+  },
+  {
+    "command": "adb push",
+    "category": "file_transfer",
+    "description": "Copy file from computer to device",
+    "syntax": "adb push <local_path> <remote_path>",
+    "parameters": [],
+    "examples": [
+      {
+        "command": "adb push test.txt /sdcard/",
+        "explanation": "Upload test.txt to device sdcard"
+      },
+      {
+        "command": "adb push ~/Downloads/file.apk /sdcard/Download/",
+        "explanation": "Transfer APK to device download folder"
+      }
+    ],
+    "common_issues": [
+      "Permission denied - Target directory not writable",
+      "Read-only file system - Cannot write to system partitions"
+    ],
+    "related_commands": [
+      "adb pull",
+      "adb shell mv"
+    ],
+    "tags": [
+      "file",
+      "transfer",
+      "essential"
+    ]
+  },
+  {
+    "command": "adb logcat",
+    "category": "debugging",
+    "description": "View device log output",
+    "syntax": "adb logcat [options] [filter-spec]",
+    "parameters": [
+      {
+        "-c": "Clear log buffer"
+      },
+      {
+        "-d": "Dump log and exit"
+      },
+      {
+        "-s": "Set default filter to silent"
+      },
+      {
+        "-v": "Set output format (brief, time, threadtime, etc.)"
+      }
+    ],
+    "examples": [
+      {
+        "command": "adb logcat",
+        "explanation": "View real-time device logs"
+      },
+      {
+        "command": "adb logcat -c && adb logcat",
+        "explanation": "Clear logs then start fresh monitoring"
+      },
+      {
+        "command": "adb logcat | grep -i error",
+        "explanation": "Filter logs to show only errors"
+      },
+      {
+        "command": "adb logcat ActivityManager:I *:S",
+        "explanation": "Show only ActivityManager logs at INFO level"
+      }
+    ],
+    "common_issues": [],
+    "related_commands": [
+      "adb shell dmesg",
+      "adb bugreport"
+    ],
+    "tags": [
+      "debugging",
+      "logs",
+      "essential"
+    ]
+  },
+  {
+    "command": "adb connect",
+    "category": "network",
+    "description": "Connect to device over TCP/IP",
+    "syntax": "adb connect <host>:<port>",
+    "parameters": [],
+    "examples": [
+      {
+        "command": "adb connect 192.168.1.100:5555",
+        "explanation": "Connect to device wirelessly"
+      },
+      {
+        "command": "adb tcpip 5555 && adb connect <device_ip>:5555",
+        "explanation": "Enable wireless debugging and connect"
+      }
+    ],
+    "common_issues": [
+      "Cannot connect - Check device and computer on same network",
+      "Connection refused - Ensure wireless debugging enabled"
+    ],
+    "related_commands": [
+      "adb disconnect",
+      "adb tcpip"
+    ],
+    "tags": [
+      "network",
+      "wireless",
+      "connectivity"
+    ]
+  },
+  {
+    "command": "adb reboot",
+    "category": "device_control",
+    "description": "Reboot device",
+    "syntax": "adb reboot [bootloader|recovery|sideload|sideload-auto-reboot]",
+    "parameters": [],
+    "examples": [
+      {
+        "command": "adb reboot",
+        "explanation": "Normal device reboot"
+      },
+      {
+        "command": "adb reboot bootloader",
+        "explanation": "Reboot into bootloader/fastboot mode"
+      },
+      {
+        "command": "adb reboot recovery",
+        "explanation": "Reboot into recovery mode"
+      }
+    ],
+    "common_issues": [],
+    "related_commands": [
+      "adb shell reboot"
+    ],
+    "tags": [
+      "device",
+      "control",
+      "reboot"
+    ]
+  }
+]

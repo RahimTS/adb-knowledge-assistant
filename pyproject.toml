@@ -1,0 +1,26 @@
+[project]
+name = "adb-knowledge-assistant"
+version = "0.1.0"
+description = "Multi-agent RAG system for Android/ADB operations"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.31.0",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.2",
+    "pydantic>=2.9.0",
+    "pymongo>=4.10.0",
+    "langchain>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langchain-mongodb>=0.2.0",
+    "langgraph>=0.2.0",
+    "sentence-transformers>=3.1.0",
+    "tiktoken>=0.8.0",
+    "scikit-learn>=1.5.0",
+    "numpy>=1.26.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.13.3",
+]

@@ -1,0 +1,516 @@
+{
+  "metadata": {
+    "source_file": "ProductCatalogServices/handlers/adb_handler.py",
+    "file_type": "adb_handler_production_code",
+    "extraction_date": "2025-10-04",
+    "total_entries": 35,
+    "description": "Production-tested ADB operations knowledge from ProductCatalogServices project",
+    "entry_types": {
+      "error_pattern": 9,
+      "code_pattern": 12,
+      "best_practice": 8,
+      "pitfall": 4,
+      "workflow": 2
+    },
+    "categories": [
+      "troubleshooting",
+      "python_implementation",
+      "wireless_debugging",
+      "file_operations",
+      "device_management",
+      "error_handling",
+      "validation",
+      "cross_platform"
+    ]
+  },
+  "knowledge_entries": [
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "cannot connect to",
+      "description": "Connection issues - device not reachable",
+      "solution": "Check device IP address, ensure device and computer are on the same network, verify device is powered on",
+      "source": "production_code",
+      "severity": "high",
+      "tags": ["connectivity", "network", "wireless_debugging"]
+    },
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "actively refused",
+      "description": "Connection refused - device may not be in wireless debugging mode or port may be incorrect",
+      "solution": "Enable wireless debugging on device (Settings > Developer Options > Wireless debugging), verify using connection port 5555, not pairing port",
+      "source": "production_code",
+      "severity": "high",
+      "tags": ["connectivity", "wireless_debugging", "configuration"]
+    },
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "No connection could be made",
+      "description": "Cannot connect to device - network connectivity issue",
+      "solution": "Verify IP address is correct, check port number (5555 for connection), ensure network connectivity between computer and device",
+      "source": "production_code",
+      "severity": "high",
+      "tags": ["connectivity", "network", "debugging"]
+    },
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "connection timed out",
+      "description": "Connection timeout - device may be unreachable or network is slow",
+      "solution": "Check device is powered on and connected to network, verify network stability, try increasing timeout value (default 30 seconds)",
+      "source": "production_code",
+      "severity": "medium",
+      "tags": ["connectivity", "timeout", "performance", "network"]
+    },
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "no route to host",
+      "description": "No route to host - network routing issue",
+      "solution": "Check network connectivity, verify IP address is correct, ensure device and computer are on same subnet",
+      "source": "production_code",
+      "severity": "high",
+      "tags": ["connectivity", "network", "routing"]
+    },
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "Unable to start pairing client",
+      "description": "Unable to start pairing - device may not be in pairing mode or network is unreachable",
+      "solution": "Ensure wireless debugging is enabled and pairing dialog is active on device, verify network connectivity, check firewall settings",
+      "source": "production_code",
+      "severity": "high",
+      "tags": ["pairing", "wireless_debugging", "setup"]
+    },
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "failed to pair",
+      "description": "Pairing failed - general pairing error",
+      "solution": "Check the 6-digit pairing code is entered correctly, ensure device is in pairing mode, verify pairing code hasn't expired",
+      "source": "production_code",
+      "severity": "high",
+      "tags": ["pairing", "wireless_debugging", "authentication"]
+    },
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "wrong pairing code",
+      "description": "Invalid pairing code provided",
+      "solution": "Verify the 6-digit code displayed on device screen, codes expire after timeout so regenerate if needed",
+      "source": "production_code",
+      "severity": "medium",
+      "tags": ["pairing", "authentication", "validation"]
+    },
+    {
+      "type": "error_pattern",
+      "category": "troubleshooting",
+      "error_indicator": "File exists",
+      "description": "Directory already exists (informational, not an error)",
+      "solution": "This can be safely ignored - directory creation is idempotent with mkdir -p flag",
+      "source": "production_code",
+      "severity": "info",
+      "tags": ["file_operations", "directory", "informational"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "get_connected_devices",
+      "category": "python_implementation",
+      "description": "List all connected Android devices",
+      "command": "adb devices",
+      "returns": "List of device IDs",
+      "error_handling": "Returns empty list if no devices connected",
+      "python_code": "devices_result = adb_handler.get_connected_devices()\nif devices_result['success']:\n    for device_id in devices_result['devices']:\n        print(f'Connected: {device_id}')",
+      "source": "production_code",
+      "tags": ["device_management", "connectivity", "python"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "pair_device",
+      "category": "python_implementation",
+      "description": "Pair Android device using wireless debugging with validation",
+      "command": "adb pair <ip>:<port> <pairing_key>",
+      "parameters": {
+        "ip": "Device IP address (validated)",
+        "port": "Pairing port (6-digit number from device screen)",
+        "pairing_key": "6-digit pairing code from device"
+      },
+      "validation": "IP format validation (regex pattern), port range check (1-65535), alphanumeric pairing key validation",
+      "error_handling": "Detects pairing failures, invalid codes, timeout issues with user-friendly messages",
+      "python_code": "result = adb_handler.pair_device(\n    ip='192.168.1.100',\n    port=12345,\n    pairing_key='123456'\n)\nif result['success']:\n    print('Pairing successful!')\nelse:\n    print(f'Error: {result[\"stderr\"]}')",
+      "source": "production_code",
+      "tags": ["wireless_debugging", "pairing", "python", "validation"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "connect_device",
+      "category": "python_implementation",
+      "description": "Connect to paired device wirelessly",
+      "command": "adb connect <ip>:<port>",
+      "parameters": {
+        "ip": "Device IP address",
+        "port": "Connection port (different from pairing port, typically 5555)"
+      },
+      "note": "Port for connection (5555) is different from pairing port",
+      "validation": "IP and port validation before execution",
+      "python_code": "result = adb_handler.connect_device(\n    ip='192.168.1.100',\n    port=5555\n)\nif result['success']:\n    print('Connected successfully!')",
+      "source": "production_code",
+      "tags": ["wireless_debugging", "connectivity", "python"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "push_file",
+      "category": "python_implementation",
+      "description": "Upload file from computer to Android device with device selection",
+      "command": "adb [-s device_id] push <source> <destination>",
+      "parameters": {
+        "source": "Local file path",
+        "destination": "Device file path",
+        "device_id": "Optional - specify target device if multiple connected"
+      },
+      "validation": "Checks device connectivity, validates paths not empty, verifies device is in connected list",
+      "error_handling": "Validates device is connected before pushing with clear error messages",
+      "python_code": "result = adb_handler.push_file(\n    source='/path/to/local/file.txt',\n    destination='/sdcard/Download/file.txt',\n    device_id='192.168.1.100:5555'  # Optional\n)\nif result['success']:\n    print(f'File uploaded: {result[\"stdout\"]}')",
+      "source": "production_code",
+      "tags": ["file_transfer", "upload", "python", "multi_device"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "pull_file",
+      "category": "python_implementation",
+      "description": "Download file from Android device to computer",
+      "command": "adb [-s device_id] pull <source> <destination>",
+      "parameters": {
+        "source": "Device file path",
+        "destination": "Local file path",
+        "device_id": "Optional - specify source device"
+      },
+      "validation": "Verifies device connection, non-empty paths",
+      "python_code": "result = adb_handler.pull_file(\n    source='/sdcard/screenshot.png',\n    destination='./downloads/screenshot.png',\n    device_id='192.168.1.100:5555'\n)\nif result['success']:\n    print('File downloaded successfully')",
+      "source": "production_code",
+      "tags": ["file_transfer", "download", "python"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "delete_file",
+      "category": "python_implementation",
+      "description": "Delete file from Android device",
+      "command": "adb [-s device_id] shell rm <path>",
+      "parameters": {
+        "source": "Device file path to delete",
+        "device_id": "Optional target device"
+      },
+      "validation": "Checks device connection and path not empty",
+      "python_code": "result = adb_handler.delete_file(\n    source='/sdcard/temp/old_file.txt',\n    device_id='192.168.1.100:5555'\n)\nif result['success']:\n    print('File deleted')",
+      "source": "production_code",
+      "tags": ["file_management", "deletion", "python"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "check_directory_exists",
+      "category": "python_implementation",
+      "description": "Check if directory exists on Android device with cross-platform support",
+      "command": "adb shell ls <parent_dir> | grep/findstr <folder_name>",
+      "platform_specific": "Uses 'findstr' on Windows, 'grep' on Linux/macOS",
+      "parameters": {
+        "ip": "Device IP",
+        "port": "Device port",
+        "directory_path": "Full directory path to check"
+      },
+      "returns": "Boolean indicating directory existence with platform info",
+      "python_code": "result = adb_handler.check_directory_exists(\n    ip='192.168.1.100',\n    port=5555,\n    directory_path='/sdcard/DCIM/Camera'\n)\nif result['exists']:\n    print(f'Directory exists on {result[\"platform\"]}')",
+      "source": "production_code",
+      "tags": ["file_management", "directory", "cross_platform", "python"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "create_directory",
+      "category": "python_implementation",
+      "description": "Create directory on Android device with parent directories",
+      "command": "adb shell mkdir -p <directory_path>",
+      "flags": "-p creates parent directories if needed",
+      "error_handling": "Detects if directory already exists (not treated as error)",
+      "python_code": "result = adb_handler.create_directory(\n    ip='192.168.1.100',\n    port=5555,\n    directory_path='/sdcard/MyApp/data'\n)\nprint(f'Created: {result[\"created\"]}, Already existed: {result[\"already_exists\"]}')",
+      "source": "production_code",
+      "tags": ["file_management", "directory", "python"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "ensure_directory_exists",
+      "category": "python_implementation",
+      "description": "Idempotent directory creation - checks first, creates if needed",
+      "workflow": "1. Check if exists -> 2. Create if not exists -> 3. Return status",
+      "returns": "Action taken: 'exists', 'created', or 'already_existed'",
+      "python_code": "result = adb_handler.ensure_directory_exists(\n    ip='192.168.1.100',\n    port=5555,\n    directory_path='/sdcard/DCIM/CustomApp'\n)\nprint(f'Action: {result[\"action\"]}, Message: {result[\"message\"]}')",
+      "source": "production_code",
+      "tags": ["file_management", "directory", "idempotent", "python", "best_practice"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "trigger_media_scan",
+      "category": "python_implementation",
+      "description": "Trigger Android media scanner to update gallery after file operations",
+      "command": "adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://<path>",
+      "use_case": "After pushing images/videos, make them appear in gallery immediately",
+      "parameters": {
+        "ip": "Device IP",
+        "port": "Device port",
+        "scan_path": "Path to scan (default: /sdcard/DCIM)"
+      },
+      "verification": "Checks for 'Broadcast completed' in output",
+      "python_code": "# After pushing image\npush_result = adb_handler.push_file(src, '/sdcard/DCIM/image.jpg')\nif push_result['success']:\n    scan_result = adb_handler.trigger_media_scan(\n        ip='192.168.1.100',\n        port=5555,\n        scan_path='/sdcard/DCIM'\n    )\n    if scan_result['broadcast_completed']:\n        print('Image visible in gallery!')",
+      "source": "production_code",
+      "tags": ["media", "gallery", "broadcast", "intent", "python"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "test_connection",
+      "category": "python_implementation",
+      "description": "Quick connection test using simple echo command",
+      "command": "adb shell echo test",
+      "use_case": "Verify device is still connected and responsive",
+      "validation": "Checks if 'test' appears in stdout",
+      "python_code": "result = adb_handler.test_connection(\n    ip='192.168.1.100',\n    port=5555\n)\nif result['success']:\n    print('Device responsive')\nelse:\n    print('Connection lost - need to reconnect')",
+      "source": "production_code",
+      "tags": ["connectivity", "health_check", "python", "monitoring"]
+    },
+    {
+      "type": "code_pattern",
+      "operation": "get_serial_number",
+      "category": "python_implementation",
+      "description": "Get device serial number using system property",
+      "command": "adb shell getprop ro.serialno",
+      "returns": "Serial number string or None if failed",
+      "use_case": "Unique device identification beyond IP:port",
+      "python_code": "serial = adb_handler.get_serial_number(\n    ip='192.168.1.100',\n    port=5555\n)\nif serial:\n    print(f'Device serial: {serial}')",
+      "source": "production_code",
+      "tags": ["device_info", "identification", "python"]
+    },
+    {
+      "type": "best_practice",
+      "title": "Always validate IP address format before ADB operations",
+      "category": "validation",
+      "practice": "Validate IP addresses before executing ADB commands",
+      "implementation": "Regex validation: ^(\\d{1,3}\\.){3}\\d{1,3}$ + range check (0-255 per octet)",
+      "rationale": "Prevents malformed commands, provides clear error messages early, avoids cryptic ADB failures",
+      "code_example": "def _validate_ip(ip: str) -> bool:\n    pattern = r'^(\\d{1,3}\\.){3}\\d{1,3}$'\n    if not re.match(pattern, ip):\n        return False\n    parts = ip.split('.')\n    return all(0 <= int(part) <= 255 for part in parts)",
+      "source": "production_code",
+      "impact": "Prevents command execution failures, improves error messages",
+      "tags": ["validation", "security", "python", "best_practice"]
+    },
+    {
+      "type": "best_practice",
+      "title": "Validate port numbers before operations",
+      "category": "validation",
+      "practice": "Validate port numbers (1-65535) before executing commands",
+      "implementation": "Range check before command execution",
+      "rationale": "Catch invalid ports early rather than during command execution failures",
+      "code_example": "def _validate_port(port: int) -> bool:\n    return 1 <= port <= 65535",
+      "source": "production_code",
+      "tags": ["validation", "python", "best_practice"]
+    },
+    {
+      "type": "best_practice",
+      "title": "Parse ADB output for user-friendly error messages",
+      "category": "error_handling",
+      "practice": "Check both stdout and stderr for error indicators",
+      "implementation": "Combine stdout and stderr, search for known error patterns",
+      "note": "ADB sometimes writes errors to stdout instead of stderr",
+      "code_example": "combined_output = f'{stdout} {stderr}'.lower()\nif 'connection refused' in combined_output:\n    return 'Device not in wireless debugging mode or wrong port'",
+      "rationale": "Cannot rely solely on return code or stderr for error detection",
+      "adb_quirk": "This is a known ADB behavior, especially for connection errors",
+      "source": "production_code",
+      "tags": ["error_handling", "user_experience", "python", "adb_quirk"]
+    },
+    {
+      "type": "best_practice",
+      "title": "Handle platform differences in shell commands",
+      "category": "cross_platform",
+      "practice": "Detect OS and adjust commands for platform compatibility",
+      "implementation": "Use platform.system() to detect OS, adjust shell commands accordingly",
+      "example": "Windows uses 'findstr', Linux/macOS use 'grep'",
+      "code_example": "system_platform = platform.system().lower()\nif system_platform == 'windows':\n    command = ['adb', 'shell', f'ls {path} | findstr {folder}']\nelse:\n    command = ['adb', 'shell', f'ls {path} | grep {folder}']",
+      "source": "production_code",
+      "tags": ["cross_platform", "compatibility", "python", "best_practice"]
+    },
+    {
+      "type": "best_practice",
+      "title": "Verify device connection before operations",
+      "category": "device_management",
+      "practice": "Check device in connected list before executing commands",
+      "implementation": "Call get_connected_devices(), verify target device in list",
+      "rationale": "Provide clear error messages like 'Device not connected' vs generic ADB errors",
+      "code_example": "devices = self.get_connected_devices()\nif device_id not in devices['devices']:\n    return {'success': False, 'error': f'Device {device_id} not connected'}",
+      "source": "production_code",
+      "impact": "Better error messages, prevents unnecessary command execution",
+      "tags": ["device_management", "error_handling", "python", "best_practice"]
+    },
+    {
+      "type": "best_practice",
+      "title": "Use timeout for ADB commands",
+      "category": "operations",
+      "practice": "Set reasonable timeout (30s default) to prevent hanging",
+      "implementation": "subprocess.run with timeout parameter",
+      "code_example": "result = run(command, stdout=PIPE, stderr=PIPE, text=True, timeout=self.timeout)",
+      "rationale": "Network issues or unresponsive devices can cause commands to hang indefinitely",
+      "recommended_timeout": "30 seconds for most operations, 60+ for large file transfers",
+      "source": "production_code",
+      "tags": ["reliability", "timeout", "python", "best_practice"]
+    },
+    {
+      "type": "best_practice",
+      "title": "Trigger media scan after pushing media files",
+      "category": "file_operations",
+      "practice": "Use am broadcast with MEDIA_SCANNER_SCAN_FILE intent after file operations",
+      "implementation": "Send broadcast intent after successful file push",
+      "rationale": "Makes pushed images/videos immediately visible in gallery, improves user experience",
+      "use_case": "After pushing images to /sdcard/DCIM or other media directories",
+      "workflow": "1. Push file -> 2. Verify success -> 3. Trigger media scan",
+      "source": "production_code",
+      "tags": ["media", "file_operations", "android", "best_practice"]
+    },
+    {
+      "type": "best_practice",
+      "title": "Use idempotent directory creation",
+      "category": "directory_operations",
+      "practice": "Check if directory exists before creating",
+      "implementation": "ensure_directory_exists() pattern: check -> create if needed -> return clear status",
+      "rationale": "Prevents unnecessary operations, provides clear action feedback, handles edge cases gracefully",
+      "method": "ensure_directory_exists() combines check_directory_exists() and create_directory()",
+      "source": "production_code",
+      "tags": ["file_management", "idempotency", "python", "best_practice"]
+    },
+    {
+      "type": "pitfall",
+      "title": "Pairing port vs Connection port confusion",
+      "category": "wireless_debugging",
+      "issue": "Using pairing port for connection or vice versa",
+      "description": "Pairing uses a different port than connection",
+      "explanation": "Pairing port is temporary 5-6 digit number shown on device screen. Connection uses standard port 5555",
+      "solution": "Use pairing port (from device screen) for pairing, then use port 5555 for connection",
+      "workflow": "1. Pair with device screen port (e.g., 37583) -> 2. Connect with port 5555",
+      "correct_example": "adb pair 192.168.1.100:37583 123456\nadb connect 192.168.1.100:5555",
+      "incorrect_example": "adb connect 192.168.1.100:37583  # WRONG - using pairing port",
+      "source": "production_code",
+      "severity": "high",
+      "frequency": "Very common mistake",
+      "tags": ["wireless_debugging", "common_mistake", "ports"]
+    },
+    {
+      "type": "pitfall",
+      "title": "ADB writes connection errors to stdout instead of stderr",
+      "category": "error_detection",
+      "issue": "Cannot rely on stderr alone for error detection",
+      "description": "ADB sometimes writes error messages to stdout instead of following stderr convention",
+      "solution": "Check both stdout and stderr for error indicators",
+      "implementation": "combined_output = f'{stdout} {stderr}'.lower()",
+      "adb_quirk": "This is a known ADB behavior that violates typical Unix conventions",
+      "source": "production_code",
+      "tags": ["error_handling", "adb_quirk", "debugging"]
+    },
+    {
+      "type": "pitfall",
+      "title": "Pushed media files don't appear in gallery",
+      "category": "file_operations",
+      "issue": "Images/videos uploaded to device don't show in gallery app",
+      "description": "Android doesn't automatically scan for new media files after ADB operations",
+      "solution": "Always trigger media scanner broadcast after pushing media files",
+      "command": "adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://path",
+      "implementation": "Call trigger_media_scan() after successful file push",
+      "source": "production_code",
+      "frequency": "Very common",
+      "tags": ["media", "gallery", "file_operations", "common_mistake"]
+    },
+    {
+      "type": "pitfall",
+      "title": "Operations fail with multiple connected devices",
+      "category": "device_management",
+      "issue": "ADB doesn't know which device to target when multiple devices connected",
+      "description": "Without device specification, ADB commands fail or target wrong device",
+      "solution": "Always use -s <device_id> flag when multiple devices connected",
+      "implementation": "Include device_id parameter in all operations when managing multiple devices",
+      "best_practice": "Verify device connection and use device_id consistently",
+      "source": "production_code",
+      "tags": ["device_management", "multi_device", "best_practice"]
+    },
+    {
+      "type": "workflow",
+      "name": "Complete Wireless Debugging Setup",
+      "category": "wireless_setup",
+      "description": "End-to-end workflow for pairing and connecting Android device wirelessly",
+      "prerequisites": [
+        "Android device with Developer Options enabled",
+        "Device and computer on same WiFi network",
+        "Wireless debugging enabled on device"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Enable wireless debugging on device",
+          "location": "Settings > Developer Options > Wireless debugging",
+          "note": "Tap 'Pair device with pairing code'"
+        },
+        {
+          "step": 2,
+          "action": "Note pairing details from device",
+          "details": "IP address, pairing port (5-6 digit), pairing code (6-digit)"
+        },
+        {
+          "step": 3,
+          "action": "Pair device from computer",
+          "command": "adb pair <ip>:<pairing_port> <code>"
+        },
+        {
+          "step": 4,
+          "action": "Connect to device",
+          "command": "adb connect <ip>:5555",
+          "note": "Use port 5555, NOT the pairing port"
+        },
+        {
+          "step": 5,
+          "action": "Verify connection",
+          "command": "adb devices",
+          "expected": "Device should appear in list"
+        }
+      ],
+      "python_implementation": "adb = AdbHandler()\n\n# Step 1: Pair (pairing port from device screen)\npair_result = adb.pair_device(\n    ip='192.168.1.100',\n    port=37583,  # From device\n    pairing_key='123456'  # From device\n)\n\nif not pair_result['success']:\n    print(f'Pairing failed: {pair_result[\"stderr\"]}')\n    exit(1)\n\nprint('✓ Pairing successful!')\n\n# Step 2: Connect (port 5555, NOT pairing port)\nconnect_result = adb.connect_device(\n    ip='192.168.1.100',\n    port=5555\n)\n\nif not connect_result['success']:\n    print(f'Connection failed: {connect_result[\"stderr\"]}')\n    exit(1)\n\nprint('✓ Connected successfully!')\n\n# Step 3: Verify\ndevices = adb.get_connected_devices()\nprint(f'Connected devices: {devices[\"devices\"]}')\n\n# Step 4: Test connection\ntest_result = adb.test_connection('192.168.1.100', 5555)\nif test_result['success']:\n    print('✓ Device responsive and ready!')",
+      "source": "production_code",
+      "duration": "~30-60 seconds",
+      "tags": ["wireless_debugging", "setup", "workflow", "complete_guide", "python"]
+    },
+    {
+      "type": "workflow",
+      "name": "Upload Image and Update Gallery",
+      "category": "file_upload_with_gallery_update",
+      "description": "Upload image to device and make it immediately visible in gallery",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Verify device connection",
+          "importance": "Prevents operation on disconnected device"
+        },
+        {
+          "step": 2,
+          "action": "Ensure target directory exists",
+          "reason": "Push fails if directory doesn't exist"
+        },
+        {
+          "step": 3,
+          "action": "Push image file",
+          "target": "/sdcard/DCIM/<folder>/"
+        },
+        {
+          "step": 4,
+          "action": "Trigger media scanner",
+          "reason": "Makes image immediately visible in gallery"
+        }
+      ],
+      "python_implementation": "adb = AdbHandler()\ndevice_ip = '192.168.1.100'\ndevice_port = 5555\ndevice_id = f'{device_ip}:{device_port}'\n\n# Step 1: Verify connection\nif not adb.test_connection(device_ip, device_port)['success']:\n    print('✗ Device not connected')\n    exit(1)\n\n# Step 2: Ensure directory exists\ndir_result = adb.ensure_directory_exists(\n    ip=device_ip,\n    port=device_port,\n    directory_path='/sdcard/DCIM/MyApp'\n)\n\nif not dir_result['success']:\n    print(f'✗ Directory error: {dir_result[\"error\"]}')\n    exit(1)\n\nprint(f'✓ Directory {dir_result[\"action\"]}')\n\n# Step 3: Push image\npush_result = adb.push_file(\n    source='./local_photo.jpg',\n    destination='/sdcard/DCIM/MyApp/photo.jpg',\n    device_id=device_id\n)\n\nif not push_result['success']:\n    print(f'✗ Upload failed: {push_result[\"stderr\"]}')\n    exit(1)\n\nprint('✓ Image uploaded')\n\n# Step 4: Trigger media scan\nscan_result = adb.trigger_media_scan(\n    ip=device_ip,\n    port=device_port,\n    scan_path='/sdcard/DCIM/MyApp'\n)\n\nif scan_result['broadcast_completed']:\n    print('✓ Image visible in gallery!')\nelse:\n    print('⚠ Upload successful but gallery may not update immediately')",
+      "source": "production_code",
+      "use_cases": ["Automated gallery population", "Testing camera apps", "Media synchronization"],
+      "tags": ["media_operations", "file_upload", "gallery", "workflow", "python"]
+    }
+  ]
+}

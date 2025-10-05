@@ -1,0 +1,160 @@
+[
+  {
+    "issue": "Device not detected by adb",
+    "symptoms": [
+      "adb devices shows empty",
+      "device not visible",
+      "no permissions"
+    ],
+    "category": "connectivity",
+    "solutions": [
+      {
+        "step": 1,
+        "action": "Enable USB debugging on device",
+        "details": "Go to Settings > Developer Options > Enable USB Debugging"
+      },
+      {
+        "step": 2,
+        "action": "Check USB cable and port",
+        "details": "Try different USB cable and port. Use USB 2.0 port if 3.0 causes issues"
+      },
+      {
+        "step": 3,
+        "action": "Install/update USB drivers (Windows)",
+        "details": "Download OEM USB drivers from manufacturer website"
+      },
+      {
+        "step": 4,
+        "action": "Restart ADB server",
+        "details": "Run: adb kill-server && adb start-server"
+      },
+      {
+        "step": 5,
+        "action": "Check udev rules (Linux)",
+        "details": "Create /etc/udev/rules.d/51-android.rules with device vendor ID"
+      }
+    ],
+    "related_commands": [
+      "adb devices",
+      "adb kill-server",
+      "adb start-server"
+    ],
+    "tags": [
+      "connectivity",
+      "usb",
+      "setup"
+    ]
+  },
+  {
+    "issue": "Device shows as unauthorized",
+    "symptoms": [
+      "unauthorized in device list",
+      "RSA key dialog"
+    ],
+    "category": "authentication",
+    "solutions": [
+      {
+        "step": 1,
+        "action": "Accept RSA key fingerprint on device",
+        "details": "Check device screen for 'Allow USB debugging' prompt and tap OK"
+      },
+      {
+        "step": 2,
+        "action": "Revoke USB debugging authorizations",
+        "details": "Settings > Developer Options > Revoke USB debugging authorizations"
+      },
+      {
+        "step": 3,
+        "action": "Delete adbkey on computer",
+        "details": "Delete ~/.android/adbkey and adbkey.pub, then reconnect"
+      }
+    ],
+    "related_commands": [
+      "adb devices"
+    ],
+    "tags": [
+      "authentication",
+      "permissions",
+      "usb"
+    ]
+  },
+  {
+    "issue": "Cannot pull database files from /data/data",
+    "symptoms": [
+      "permission denied",
+      "file not found"
+    ],
+    "category": "file_access",
+    "solutions": [
+      {
+        "step": 1,
+        "action": "Check if device is rooted",
+        "details": "Root access required for /data/data access on production builds"
+      },
+      {
+        "step": 2,
+        "action": "Use run-as for debuggable apps",
+        "details": "adb shell run-as com.package.name cp /data/data/..."
+      },
+      {
+        "step": 3,
+        "action": "Copy to accessible location first",
+        "details": "adb shell 'cp /data/data/app/db.file /sdcard/ && chmod 777 /sdcard/db.file'"
+      },
+      {
+        "step": 4,
+        "action": "Use Android Backup (Android < 12)",
+        "details": "adb backup -f backup.ab com.package.name"
+      }
+    ],
+    "related_commands": [
+      "adb pull",
+      "adb shell run-as",
+      "adb backup"
+    ],
+    "tags": [
+      "file",
+      "permissions",
+      "database"
+    ]
+  },
+  {
+    "issue": "ADB connection lost during operation",
+    "symptoms": [
+      "device offline",
+      "connection reset"
+    ],
+    "category": "connectivity",
+    "solutions": [
+      {
+        "step": 1,
+        "action": "Check USB cable stability",
+        "details": "Replace cable if connection drops frequently"
+      },
+      {
+        "step": 2,
+        "action": "Disable USB selective suspend (Windows)",
+        "details": "Power Options > USB selective suspend setting > Disabled"
+      },
+      {
+        "step": 3,
+        "action": "Increase ADB timeout",
+        "details": "Set environment variable: ADB_TIMEOUT=10000 (milliseconds)"
+      },
+      {
+        "step": 4,
+        "action": "Use wireless ADB instead",
+        "details": "adb tcpip 5555 && adb connect <ip>:5555"
+      }
+    ],
+    "related_commands": [
+      "adb reconnect",
+      "adb connect"
+    ],
+    "tags": [
+      "connectivity",
+      "stability",
+      "timeout"
+    ]
+  }
+]

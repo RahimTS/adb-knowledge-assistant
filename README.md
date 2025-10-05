@@ -63,6 +63,7 @@ Server will be running at `http://localhost:8000`
 curl http://localhost:8000/health
 
 **Query Knowledge Base**
+
 curl -X POST "http://localhost:8000/query"
 -H "Content-Type: application/json"
 -d '{"query": "How do I pair a device wirelessly?"}'
